@@ -106,7 +106,7 @@
         ];
       function getClockData() {
         const now = new Date();
-        const tzOffset = now.gettimezoneOffset();
+        const tzOffset = now.getTimezoneOffset();
         const tzSign = tzOffset > 0 ? "-" : "+";
         const tzHour = String(Math.abs(tzOffset / 60)).padStart(2, "0");
         return {
