@@ -19,7 +19,7 @@
         background-color: #1f1f1f;
         font-family: Consolas, "Courier New", monospace;
       }
-      .tab:before {
+      .item:before {
         content: "\00A0\00A0";
       }
       .keyword {
@@ -28,10 +28,6 @@
       .local-variable {
         color: #4fc1ff;
       }
-      .object-key,
-      .colon {
-        color: #9cdcfe;
-      }
       .operator,
       .comma,
       .semicolon {
@@ -39,6 +35,9 @@
       }
       .bracket {
         color: #ffd700;
+      }
+      .object-key {
+        color: #9cdcfe;
       }
       .number {
         color: #b5cea8;
@@ -49,39 +48,67 @@
     </style>
   </head>
   <body>
-    <div id="object_clock"></div>
+    <div>
+      <div>
+        <span class="keyword">const</span>
+        <span class="local-variable">clock</span>
+        <span class="operator">=</span>
+        <span class="bracket">{</span>
+      </div>
+      <div id="clock"></div>
+      <div><span class="bracket">}</span><span class="semicolon">;</span></div>
+    </div>
     <script>
+      const items = [
+        { key: "timeZone", type: "string", quoted: true },
+        { key: "year", type: "number" },
+        { key: "month", type: "string", quoted: true },
+        { key: "date", type: "number" },
+        { key: "day", type: "string", quoted: true },
+        { key: "hour", type: "number" },
+        { key: "minute", type: "number" },
+        { key: "second", type: "number" },
+      ];
+      document.getElementById("clock").innerHTML = items
+        .map(
+          ({ key, type }) =>
+            `<div class="item"><span class="object-key">${key}:</span>&nbsp;<span id="${key}" class="${type}"></span><span class="comma">,</span></div>`
+        )
+        .join("");
+      function setFontSize() {
+        const minSide = Math.min(window.innerWidth, window.innerHeight);
+        document.documentElement.style.fontSize = minSide * 0.04 + "px";
+      }
+      setFontSize();
+      window.addEventListener("resize", setFontSize);
       const monthList = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      const dayList = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-      function getClock() {
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ],
+        dayList = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+      function getClockData() {
         const now = new Date();
         const tzOffset = now.getTimezoneOffset();
         const tzSign = tzOffset > 0 ? "-" : "+";
-        const tzHour = String(Math.abs(Math.floor(tzOffset / 60))).padStart(
-          2,
-          "0"
-        );
+        const tzHour = String(Math.abs(tzOffset / 60)).padStart(2, "0");
         return {
           timeZone: `GMT${tzSign}${tzHour}`,
           year: now.getFullYear(),
@@ -93,46 +120,20 @@
           second: now.getSeconds(),
         };
       }
-      const clockFields = [
-        { name: "timeZone", type: "string" },
-        { name: "year", type: "number" },
-        { name: "month", type: "string" },
-        { name: "date", type: "number" },
-        { name: "day", type: "string" },
-        { name: "hour", type: "number" },
-        { name: "minute", type: "number" },
-        { name: "second", type: "number" },
-      ];
-      function renderClock(clock) {
-        const fieldsHtml = clockFields
-          .map((field) => {
-            return `<div class="tab" id="${
-              field.name
-            }"><span class="object-key">${
-              field.name
-            }</span><span class="colon">:</span>&nbsp;<span id="${
-              field.name
-            }_value" class="${field.type}">${
-              field.type === "string"
-                ? `&quot;${clock[field.name]}&quot;`
-                : clock[field.name]
-            }</span><span class="comma">,</span></div>`;
-          })
-          .join("");
-        return `<div><span class="keyword">const</span>&nbsp;<span class="local-variable">clock</span>&nbsp;<span class="operator">=</span>&nbsp;<span class="bracket">{</span></div>${fieldsHtml}<div><span class="bracket">}</span><span class="semicolon">;</span></div>`;
+      for (const item of items) {
+        item.node = document.getElementById(item.key);
       }
-      function updateClock() {
-        const clock = getClock();
-        document.getElementById("object_clock").innerHTML = renderClock(clock);
-        setTimeout(updateClock, 1000 - new Date().getMilliseconds());
+      function updateValue() {
+        const clock = getClockData();
+        items.forEach(({ key, quoted, node }) => {
+          const newValue = quoted ? `&quot;${clock[key]}&quot;` : clock[key];
+          if (node.innerHTML !== newValue) {
+            node.innerHTML = newValue;
+          }
+        });
+        setTimeout(updateValue, 1000);
       }
-      updateClock();
-      function updateFontSize() {
-        const minSide = Math.min(window.innerWidth, window.innerHeight);
-        document.documentElement.style.fontSize = minSide * 0.04 + "px";
-      }
-      updateFontSize();
-      window.addEventListener("resize", updateFontSize);
+      updateValue();
     </script>
   </body>
 </html>
