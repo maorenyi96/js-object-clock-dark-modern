@@ -57,7 +57,7 @@
   <body>
     <div id="object_clock"></div>
     <script>
-      const en_month_name = [
+      const monthList = [
         "January",
         "February",
         "March",
@@ -71,7 +71,7 @@
         "November",
         "December",
       ];
-      const en_week_days_name = [
+      const dayList = [
         "Sunday",
         "Monday",
         "Tuesday",
@@ -82,7 +82,6 @@
       ];
       function getClock() {
         const now = new Date();
-        const unix = Math.floor(now.getTime() / 1000);
         const tzOffset = now.getTimezoneOffset();
         const tzSign = tzOffset > 0 ? "-" : "+";
         const tzHour = String(Math.abs(Math.floor(tzOffset / 60))).padStart(
@@ -90,31 +89,25 @@
           "0"
         );
         return {
+          timeZone: `GMT${tzSign}${tzHour}`,
+          year: now.getFullYear(),
+          month: monthList[now.getMonth()],
+          date: now.getDate(),
+          day: dayList[now.getDay()],
           hour: now.getHours(),
           minute: now.getMinutes(),
           second: now.getSeconds(),
-          period: now.getHours() < 12 ? "AM" : "PM",
-          day: now.getDate(),
-          weekday: en_week_days_name[now.getDay()],
-          month: en_month_name[now.getMonth()],
-          year: now.getFullYear(),
-          timezone: `GMT${tzSign}${tzHour}`,
-          unix,
-          utc: now.toISOString(),
         };
       }
       const clockFields = [
+        { name: "timeZone", type: "string" },
+        { name: "year", type: "number" },
+        { name: "month", type: "string" },
+        { name: "date", type: "number" },
+        { name: "day", type: "string" },
         { name: "hour", type: "number" },
         { name: "minute", type: "number" },
         { name: "second", type: "number" },
-        { name: "period", type: "string" },
-        { name: "day", type: "number" },
-        { name: "weekday", type: "string" },
-        { name: "month", type: "string" },
-        { name: "year", type: "number" },
-        { name: "timezone", type: "string" },
-        { name: "unix", type: "number" },
-        { name: "utc", type: "string" },
       ];
       function renderClock(clock) {
         const fieldsHtml = clockFields
