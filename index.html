@@ -17,7 +17,6 @@
       body {
         height: 100%;
         line-height: 1.2;
-        font-size: 32px;
         font-family: Consolas, "Courier New", monospace;
       }
       body {
@@ -141,6 +140,12 @@
         setTimeout(updateClock, 1000 - new Date().getMilliseconds());
       }
       updateClock();
+      function updateFontSize() {
+        const minSide = Math.min(window.innerWidth, window.innerHeight);
+        document.documentElement.style.fontSize = minSide * 0.04 + "px";
+      }
+      updateFontSize();
+      window.addEventListener("resize", updateFontSize);
     </script>
   </body>
 </html>
