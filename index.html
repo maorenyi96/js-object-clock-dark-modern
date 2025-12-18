@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        line-height: 1.2;
+        font-size: 32px;
+        font-family: Consolas, "Courier New", monospace;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #1f1f1f;
+      }
+      .tab:before {
+        content: "\00A0\00A0\00A0\00A0";
+      }
+      .keyword {
+        color: #569cd6;
+      }
+      .local-variable {
+        color: #4fc1ff;
+      }
+      .object-key,
+      .colon {
+        color: #9cdcfe;
+      }
+      .operator,
+      .comma,
+      .semicolon {
+        color: #d4d4d4;
+      }
+      .bracket {
+        color: #ffd700;
+      }
+      .number {
+        color: #b5cea8;
+      }
+      .string {
+        color: #ce9178;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="object_clock"></div>
+    <script>
+      const en_month_name = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const en_week_days_name = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      function getClock() {
+        const now = new Date();
+        const unix = Math.floor(now.getTime() / 1000);
+        const tzOffset = now.getTimezoneOffset();
+        const tzSign = tzOffset > 0 ? "-" : "+";
+        const tzHour = String(Math.abs(Math.floor(tzOffset / 60))).padStart(
+          2,
+          "0"
+        );
+        return {
+          hour: now.getHours(),
+          minute: now.getMinutes(),
+          second: now.getSeconds(),
+          period: now.getHours() < 12 ? "AM" : "PM",
+          day: now.getDate(),
+          weekday: en_week_days_name[now.getDay()],
+          month: en_month_name[now.getMonth()],
+          year: now.getFullYear(),
+          timezone: `GMT${tzSign}${tzHour}`,
+          unix,
+          utc: now.toISOString(),
+        };
+      }
+      const clockFields = [
+        { name: "hour", type: "number" },
+        { name: "minute", type: "number" },
+        { name: "second", type: "number" },
+        { name: "period", type: "string" },
+        { name: "day", type: "number" },
+        { name: "weekday", type: "string" },
+        { name: "month", type: "string" },
+        { name: "year", type: "number" },
+        { name: "timezone", type: "string" },
+        { name: "unix", type: "number" },
+        { name: "utc", type: "string" },
+      ];
+      function renderClock(clock) {
+        const fieldsHtml = clockFields
+          .map((field) => {
+            return `<div class="tab" id="${
+              field.name
+            }"><span class="object-key">${
+              field.name
+            }</span><span class="colon">:</span>&nbsp;<span id="${
+              field.name
+            }_value" class="${field.type}">${
+              field.type === "string"
+                ? `&quot;${clock[field.name]}&quot;`
+                : clock[field.name]
+            }</span><span class="comma">,</span></div>`;
+          })
+          .join("");
+        return `<div><span class="keyword">const</span>&nbsp;<span class="local-variable">clock</span>&nbsp;<span class="operator">=</span>&nbsp;<span class="bracket">{</span></div>${fieldsHtml}<div><span class="bracket">}</span><span class="semicolon">;</span></div>`;
+      }
+      function updateClock() {
+        const clock = getClock();
+        document.getElementById("object_clock").innerHTML = renderClock(clock);
+        setTimeout(updateClock, 1000 - new Date().getMilliseconds());
+      }
+      updateClock();
+    </script>
+  </body>
+</html>
