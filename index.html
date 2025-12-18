@@ -60,7 +60,7 @@
     </div>
     <script>
       const items = [
-        { key: "timeZone", type: "string", quoted: true },
+        { key: "timezone", type: "string", quoted: true },
         { key: "year", type: "number" },
         { key: "month", type: "string", quoted: true },
         { key: "date", type: "number" },
@@ -106,11 +106,11 @@
         ];
       function getClockData() {
         const now = new Date();
-        const tzOffset = now.getTimezoneOffset();
+        const tzOffset = now.gettimezoneOffset();
         const tzSign = tzOffset > 0 ? "-" : "+";
         const tzHour = String(Math.abs(tzOffset / 60)).padStart(2, "0");
         return {
-          timeZone: `GMT${tzSign}${tzHour}`,
+          timezone: `GMT${tzSign}${tzHour}`,
           year: now.getFullYear(),
           month: monthList[now.getMonth()],
           date: now.getDate(),
